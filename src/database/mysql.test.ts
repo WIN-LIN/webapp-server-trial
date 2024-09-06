@@ -1,20 +1,20 @@
 import { describe, it, expect, beforeEach, afterEach } from "vitest";
 import * as mysql from "./mysql";
-import { prisma } from "../clients/prsima";
-
+import { prismaClient } from "../clients/prsima";
+import { User } from "@prisma/client";
 async function cleanDatabase() {
   // List all tables you want to clear
-  const tables = ["user", "account"];
+  const tables = ["User", "Account"];
 
   // Disable foreign key checks to avoid deletion conflicts
-  await prisma.$executeRawUnsafe("SET FOREIGN_KEY_CHECKS = 0;");
+  await prismaClient.$executeRawUnsafe("SET FOREIGN_KEY_CHECKS = 0;");
 
   for (const table of tables) {
-    await prisma.$executeRawUnsafe(`TRUNCATE TABLE ${table};`);
+    await prismaClient.$executeRawUnsafe(`TRUNCATE TABLE ${table};`);
   }
 
   // Re-enable foreign key checks
-  await prisma.$executeRawUnsafe("SET FOREIGN_KEY_CHECKS = 1;");
+  await prismaClient.$executeRawUnsafe("SET FOREIGN_KEY_CHECKS = 1;");
 }
 
 describe("mysql", () => {
@@ -27,53 +27,54 @@ describe("mysql", () => {
   });
 
   it("should create a new user if no existing user is found", async () => {
-    const mockNewUser = {
+    const mockNewUser: User = {
       id: 1,
       username: "newuser",
       email: "new@example.com",
-      passkey_type: "type1",
+      passkeyType: "type1",
     };
 
     const user = await mysql.createUser(
       mockNewUser.username,
       mockNewUser.email,
-      mockNewUser.passkey_type
+      mockNewUser.passkeyType
     );
 
     expect(user).toEqual(mockNewUser);
   });
 
   it("returns null if trying to create a user that already exists", async () => {
-    const mockUser = {
+    const mockUser: User = {
+      id: 1,
       username: "testuser",
       email: "test@example.com",
-      passkey_type: "type1",
+      passkeyType: "type1",
     };
 
     await mysql.createUser(
       mockUser.username,
       mockUser.email,
-      mockUser.passkey_type
+      mockUser.passkeyType
     );
 
     const user = await mysql.createUser(
       mockUser.username,
       mockUser.email,
-      mockUser.passkey_type
+      mockUser.passkeyType
     );
 
     expect(user).toBeNull();
   });
 
   it("returns a user if user id exists", async () => {
-    const user = {
+    const user: User = {
       id: 1,
       username: "testuser",
       email: "test@example.com",
-      passkey_type: "type1",
+      passkeyType: "type1",
     };
 
-    await mysql.createUser(user.username, user.email, user.passkey_type);
+    await mysql.createUser(user.username, user.email, user.passkeyType);
 
     const exisitingUser = await mysql.getUserById(1);
     expect(exisitingUser).toEqual(user);
@@ -85,23 +86,23 @@ describe("mysql", () => {
   });
 
   it("should return user if given username, email, passkey type combination exists", async () => {
-    const mockUser = {
+    const mockUser: User = {
       id: 1,
       username: "testuser",
       email: "test@example.com",
-      passkey_type: "type1",
+      passkeyType: "type1",
     };
 
     await mysql.createUser(
       mockUser.username,
       mockUser.email,
-      mockUser.passkey_type
+      mockUser.passkeyType
     );
 
     const user = await mysql.getUserByUsernameAndEmailAndPasskeyType(
       mockUser.username,
       mockUser.email,
-      mockUser.passkey_type
+      mockUser.passkeyType
     );
 
     expect(user).toEqual(mockUser);
@@ -134,14 +135,14 @@ describe("mysql", () => {
   });
 
   it("should return the deleted user if user id exists", async () => {
-    const user = {
+    const user: User = {
       id: 1,
       username: "testuser",
       email: "test@example.com",
-      passkey_type: "type1",
+      passkeyType: "type1",
     };
 
-    await mysql.createUser(user.username, user.email, user.passkey_type);
+    await mysql.createUser(user.username, user.email, user.passkeyType);
 
     const deletedUser = await mysql.deleteUser(user.id);
     expect(deletedUser).toEqual(user);
