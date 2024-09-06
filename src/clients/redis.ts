@@ -1,4 +1,4 @@
-import Redis from "ioredis";
+import { Redis } from "ioredis";
 
 const redisClient = new Redis({
   host: process.env.REDIS_HOST || "localhost",
@@ -9,4 +9,4 @@ if (!redisClient) {
   throw new Error("Redis client not found");
 }
 
-export default redisClient;
+export { redisClient };

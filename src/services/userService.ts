@@ -1,4 +1,4 @@
-import redisClient from "../redis";
+import { redisClient } from "../clients/redis";
 
 type Credential = {
   userName: string;
