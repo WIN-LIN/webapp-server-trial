@@ -6,7 +6,7 @@
     "setup": "npm install && npm install --save-dev",
     "dev": "nodemon --watch 'src/**/*.ts' --exec 'ts-node' src/index.ts",
     "dev-infra-setup": "docker compose up -d mysql redis",
-    "db-migrate": "prisma migrate dev && prisma generate",
+    "db-migrate": "prisma db push && prisma generate",
     "test": "vitest run --coverage"
   },
   "keywords": [],
