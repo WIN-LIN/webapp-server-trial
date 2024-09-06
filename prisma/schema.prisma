@@ -13,22 +13,22 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model user {
+model User {
   id           Int       @id @default(autoincrement())
   username     String
   email        String
-  passkey_type String
-  account      account[]
+  passkeyType  String
+  account      Account[]
 
-  @@unique([username, email, passkey_type])
+  @@unique([username, email, passkeyType])
 }
 
-model account {
-  owner           user   @relation(fields: [owner_id], references: [id])
-  owner_id        Int
-  chain_id        Int
-  account_address String
-  entry_address   String
+model Account {
+  owner          User   @relation(fields: [ownerId], references: [id])
+  ownerId        Int
+  chainId        Int
+  accountAddress String
+  entryAddress   String
 
-  @@id([owner_id, chain_id, account_address])
+  @@id([ownerId, chainId, accountAddress])
 }
